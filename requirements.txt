@@ -1,0 +1,3 @@
+docker-events==0.0.10
+docker-py==1.4.0
+python-ptrace==0.8.1
