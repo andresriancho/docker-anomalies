@@ -1,9 +1,11 @@
 import threading
 import logging
+import optparse
 import time
 
 from docker import Client
-
+from docker_anomalies.ptrace_wrapper import SyscallTracer
+from docker_anomalies.event_queuer import queue_syscall
 
 CONTAINER_MONITORS = []
 PROCESS_MONITORS = []
@@ -80,19 +82,46 @@ class ContainerMonitorThread(threading.Thread):
 class ProcessMonitorThread(threading.Thread):
     def __init__(self, process_id):
         self.process_id = process_id
-        self.should_run = True
+        self.debugger = None
         super(ProcessMonitorThread, self).__init__(name='ProcessMonitor')
 
     def run(self):
         logging.info('Monitoring process ID: %s' % self.process_id)
 
-        while self.should_run:
-            #raise NotImplementedError('Need to call SyscallTracer()')
-            time.sleep(1)
+        self.debugger = SyscallTracer(options=optparse.Values({
+                                          'fork': False,
+                                          'enter': False,
+                                          'show_ip': False,
+                                          'trace_exec': True,
+                                          'no_stdout': False,
+                                          'pid': self.process_id,
+                                          'show_pid': True,
+                                      }),
+                                      program=None,
+                                      ignore_syscall_callback=self.ignore_syscall_callback,
+                                      syscall_callback=self.syscall_callback,
+                                      event_callback=self.event_callback,
+                                      quit_callback=self.quit_callback)
+        self.debugger.main()
 
-    def cleanup(self):
-        PROCESS_MONITORS.remove(self)
-        logging.info('Finished monitoring process ID: %s' % self.process_id)
+    def syscall_callback(self, syscall):
+        queue_syscall(syscall)
+
+    def ignore_syscall_callback(self, *args):
+        # TODO: Smarter decision here, we only want some of the syscalls
+        #       sent to the queue/anomaly detection engine
+        return False
+
+    def event_callback(self, *args):
+        pass
+
+    def quit_callback(self):
+        try:
+            PROCESS_MONITORS.remove(self)
+        except ValueError:
+            pass
+        else:
+            logging.info('Finished monitoring process ID: %s' % self.process_id)
 
 
 def process_monitor(pid):
