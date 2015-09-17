@@ -6,31 +6,53 @@ import argparse
 import sys
 import yaml
 
-
-
-if __name__=="__main__":
-
-    parser = argparse.ArgumentParser(
-        description="Docker anomaly detection."
-    )
-    parser.add_argument(
-        '--conf',
-        type=str,
-        help='A yaml file with the monitor settings.'
-    )
-    args = parser.parse_args()
+def load_rulebook(path):
+    '''
+    Load a rulebook file.
+    '''
     
-    
-    # Open the conf file.
     try:
-        conf = yaml.load(open(args.conf))
+        rules = yaml.load(open(path))
     except IOError:
-        sys.stderr.write('Error: configuration file does not exist.')
+        # TODO -> Wrap it arround the log_handler
+        sys.stderr.write('Error: Rulebook file does not exist\n.')
         sys.stderr.write(IOError)
         exit(1)
     
-    rules = Rules(conf['rules'])
-    print rules.ruleset
+    return rules
+
+
+def parse_args(args=sys.argv):
+    '''
+    Define the CLI and parse the arguments.
+    '''
+    
+    
+    parser = argparse.ArgumentParser(
+        description="Docker anomaly detection."
+    )
+    
+    
+    parser.add_argument(
+        '-r', '--rules',
+        type=str,
+        required=True,
+        help='A yaml file containing the monitor rules.'
+    )
+    
+    
+    return parser.parse_args(argv)
+
+
+if __name__=="__main__":
+    
+    
+    args = parse_args(raw)
+    
+    rulebook = load_rulebook(args.rules)
+    
+    rules = Rules(rulebook)
+    
         
 
     
