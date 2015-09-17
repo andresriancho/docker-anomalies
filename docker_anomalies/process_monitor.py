@@ -1,4 +1,5 @@
 import threading
+import logging
 import time
 
 from docker import Client
@@ -43,6 +44,8 @@ class ContainerMonitorThread(threading.Thread):
         super(ContainerMonitorThread, self).__init__(name='ContainerMonitor')
 
     def run(self):
+        logging.info('Monitoring container: %s' % self.container_id[:7])
+
         while self.should_run:
             # >>> cli.top('sleeper')
             # {'Processes': [['952', 'root', '/bin/sleep 30']],
@@ -61,7 +64,12 @@ class ContainerMonitorThread(threading.Thread):
                 if not already_monitored:
                     process_monitor(pid)
 
+                    msg = 'New process ID detected %s detected in container %s'
+                    logging.info(msg % (pid, self.container_id[:7]))
+
             time.sleep(CONTAINER_MONITOR_TIMEOUT)
+
+        logging.info('Finished monitoring container: %s' % self.container_id[:7])
 
 
 class ProcessMonitorThread(threading.Thread):
@@ -71,11 +79,14 @@ class ProcessMonitorThread(threading.Thread):
         super(ProcessMonitorThread, self).__init__(name='ProcessMonitor')
 
     def run(self):
+        logging.info('Monitoring process ID: %s' % self.process_id)
+
         while self.should_run:
             raise NotImplementedError
 
     def cleanup(self):
         PROCESS_MONITORS.remove(self)
+        logging.info('Finished monitoring process ID: %s' % self.process_id)
 
 
 def process_monitor(pid):
