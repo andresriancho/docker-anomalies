@@ -20,8 +20,8 @@ def container_monitor(event):
 
     :param event: The docker event as received from the API
     """
-    container_id = event['container']
-    event_action = event['action']
+    container_id = event['id']
+    event_action = event['status']
 
     if event_action == 'start':
         thread = ContainerMonitorThread(container_id)
