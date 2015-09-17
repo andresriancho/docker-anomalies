@@ -39,16 +39,15 @@ class ContainerMonitorThread(threading.Thread):
     def __init__(self, container_id):
         self.container_id = container_id
         self.should_run = True
+        self.client = Client(base_url='unix://var/run/docker.sock')
         super(ContainerMonitorThread, self).__init__(name='ContainerMonitor')
 
     def run(self):
         while self.should_run:
-            client = Client(base_url='unix://var/run/docker.sock')
-
             # >>> cli.top('sleeper')
             # {'Processes': [['952', 'root', '/bin/sleep 30']],
             #  'Titles': ['PID', 'USER', 'COMMAND']}
-            container_top = client.top(self.container_id)
+            container_top = self.client.top(self.container_id)
 
             for process_data in container_top['Processes']:
                 pid = int(process_data[0])
@@ -57,6 +56,7 @@ class ContainerMonitorThread(threading.Thread):
                 for process_monitor_thread in PROCESS_MONITORS:
                     if process_monitor_thread.pid == pid:
                         already_monitored = True
+                        break
 
                 if not already_monitored:
                     process_monitor(pid)
@@ -73,6 +73,9 @@ class ProcessMonitorThread(threading.Thread):
     def run(self):
         while self.should_run:
             raise NotImplementedError
+
+    def cleanup(self):
+        PROCESS_MONITORS.remove(self)
 
 
 def process_monitor(pid):
