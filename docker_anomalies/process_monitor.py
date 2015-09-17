@@ -25,6 +25,7 @@ def container_monitor(event):
 
     if event_action == 'start':
         thread = ContainerMonitorThread(container_id)
+        thread.daemon = True
         thread.start()
 
         CONTAINER_MONITORS.append(thread)
@@ -52,12 +53,16 @@ class ContainerMonitorThread(threading.Thread):
             #  'Titles': ['PID', 'USER', 'COMMAND']}
             container_top = self.client.top(self.container_id)
 
+            if container_top is None:
+                time.sleep(CONTAINER_MONITOR_TIMEOUT)
+                continue
+
             for process_data in container_top['Processes']:
-                pid = int(process_data[0])
+                pid = int(process_data[1])
                 already_monitored = False
 
                 for process_monitor_thread in PROCESS_MONITORS:
-                    if process_monitor_thread.pid == pid:
+                    if process_monitor_thread.process_id == pid:
                         already_monitored = True
                         break
 
@@ -97,6 +102,7 @@ def process_monitor(pid):
     :param pid: The process ID to monitor
     """
     thread = ProcessMonitorThread(pid)
+    thread.daemon = True
     thread.start()
 
     PROCESS_MONITORS.append(thread)
