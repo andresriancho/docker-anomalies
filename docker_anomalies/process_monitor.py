@@ -82,7 +82,7 @@ class ProcessMonitorThread(threading.Thread):
         logging.info('Monitoring process ID: %s' % self.process_id)
 
         while self.should_run:
-            raise NotImplementedError
+            time.sleep(1)
 
     def cleanup(self):
         PROCESS_MONITORS.remove(self)
