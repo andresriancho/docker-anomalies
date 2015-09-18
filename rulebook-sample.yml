@@ -1,0 +1,10 @@
+events:
+  - name: 'Dont colect events from redis image'
+    match:
+      from: 'redis:*'
+    action: ignore
+
+  - name: 'Kill every container with id starting with Forbiden'
+    match:
+	from: "^Forbiden.+"
+    action: kill
