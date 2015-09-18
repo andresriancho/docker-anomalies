@@ -36,14 +36,30 @@ class RuleBook():
     def _parse_raw_ruleset(self, name, raw_ruleset):
         '''
         Take a raw ruleset and return a DataFilter instance.
+
+        Arguments:
+        ----------
+        - name: The name of the rule. (A description).
+        - raw_ruleset: A list of unparsed rules specified by the user for this
+          filter.
+
+        Returns:
+        --------
+        Returns a DataFilter object containing the rules specified in the user
+        defined rulebook.
+
+        Note:
+        -----
+        The returned DataFilter object has none registered callbacks for the
+        actions. They must be provided by the event consumers.
+
         '''
-        # FIXME!! Implement the DataFilter class!!
-        data_filter = DataFilter(name=name)
+        data_filter = DataFilter(name)
+        # Register the rules one by one:
         for raw_rule in raw_ruleset:
-            data_filter.add_rule(
-                name=raw_rule['name'],
-                match=self._compile_regexps(raw_ruleset['match']),
-                action=raw_rule['action'])
+            raw_rule['match'] = self._compile_regexps(raw_ruleset['match'])
+            data_filter.add_rule(raw_rule)
+        return data_filter
 
     def _compile_regexps(raw_match_conditions):
         '''
