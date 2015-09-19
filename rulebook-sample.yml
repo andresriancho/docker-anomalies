@@ -6,5 +6,5 @@ events:
 
   - name: 'Kill every container with id starting with Forbiden'
     match:
-	from: "^Forbiden.+"
+      from: "^Forbiden.+"
     action: kill
