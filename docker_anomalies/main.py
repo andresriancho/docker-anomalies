@@ -29,6 +29,9 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    data_filters = RuleBook(args.rules)
+    rule_book = RuleBook(args.rules)
+
+    # Get a map of filters, each loaded with the user-defined rules.
+    data_filters = rule_book.filters
 
     # TODO: Now it should initialize the data collectors.
