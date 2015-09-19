@@ -11,13 +11,12 @@ class RuleBook():
     def __init__(self, path):
         '''
         Constructor for the RuleBook class.
-
-        Returns:
-        --------
-        A dict of DataFilter objects loaded with the user-specified rules.
         '''
+
         raw_rulebook = self._open_rulebook_file(path)
-        # Now parse every rule-set in the raw_rulebook
+
+        # Now parse every rule-set in the raw_rulebook and load them into a
+        # filter.
         self.filters = {}
         for ruleset_name in raw_rulebook:
             # Make a filter from the raw_ruleset taken from the rulebook.
@@ -28,13 +27,21 @@ class RuleBook():
     def _open_rulebook_file(self, path):
         '''
         Wrapper for file opening and IOError handling.
+
+        Returns:
+        --------
+        Returs a dict containing the rulebook that was provided by the user in
+        YAML format.
         '''
+
         try:
             raw_rulebook = yaml.load(open(path))
+
         except IOError:
             # TODO -> Wrap it arround the log_handler
             sys.stderr.write(IOError)
             exit(1)
+
         return raw_rulebook
 
     def _parse_raw_ruleset(self, name, raw_ruleset):
@@ -59,10 +66,12 @@ class RuleBook():
 
         '''
         data_filter = DataFilter(name)
+
         # Register the rules one by one:
         for raw_rule in raw_ruleset:
             raw_rule['match'] = self._compile_regexps(raw_rule['match'])
             data_filter.add_rule(raw_rule)
+
         return data_filter
 
     def _compile_regexps(self, raw_match_conditions):
@@ -75,10 +84,18 @@ class RuleBook():
 
         raw_match_conditions: A dictionary of match conditions taken from the
         raw_rulebook. The keys correspond to fields in the collected data and
-        values are strings that can be compiled to python regular expressions.
+        the values are strings that to be compiled into python regular
+        expressions.
+
+        Returns:
+        --------
+
+        Returns a dict of regular expressions.
         '''
+
         regexps = {}
         for field in raw_match_conditions:
             # Compile each of the user-specified match-conditions
             regexps[field] = re.compile(raw_match_conditions[field])
+
         return regexps
