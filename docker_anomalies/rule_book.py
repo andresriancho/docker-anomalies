@@ -66,7 +66,7 @@ class RuleBook():
             data_filter.add_rule(raw_rule)
         return data_filter
 
-    def _compile_regexps(raw_match_conditions):
+    def _compile_regexps(self, raw_match_conditions):
         '''
         Take a dict of "raw" match conditions and compile them into python
         regular expressions.
