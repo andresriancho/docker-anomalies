@@ -18,13 +18,12 @@ class RuleBook():
         '''
         raw_rulebook = self._open_rulebook_file(path)
         # Now parse every rule-set in the raw_rulebook
-        filters = {}
+        self.filters = {}
         for ruleset_name in raw_rulebook:
             # Make a filter from the raw_ruleset taken from the rulebook.
             raw_ruleset = raw_rulebook[ruleset_name]
-            filters[ruleset_name] = self._parse_raw_ruleset(ruleset_name,
-                                                            raw_ruleset)
-        return filters
+            self.filters[ruleset_name] = self._parse_raw_ruleset(ruleset_name,
+                                                                 raw_ruleset)
 
     def _open_rulebook_file(self, path):
         '''
