@@ -11,6 +11,10 @@ class RuleBook():
     def __init__(self, path):
         '''
         Constructor for the RuleBook class.
+
+        Returns:
+        --------
+        A dict of DataFilter objects loaded with the user-specified rules.
         '''
         raw_rulebook = self._open_rulebook_file(path)
         # Now parse every rule-set in the raw_rulebook
@@ -20,6 +24,7 @@ class RuleBook():
             raw_ruleset = raw_rulebook[ruleset_name]
             filters[ruleset_name] = self._parse_raw_ruleset(ruleset_name,
                                                             raw_ruleset)
+        return filters
 
     def _open_rulebook_file(self, path):
         '''
