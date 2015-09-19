@@ -62,7 +62,7 @@ class RuleBook():
         data_filter = DataFilter(name)
         # Register the rules one by one:
         for raw_rule in raw_ruleset:
-            raw_rule['match'] = self._compile_regexps(raw_ruleset['match'])
+            raw_rule['match'] = self._compile_regexps(raw_rule['match'])
             data_filter.add_rule(raw_rule)
         return data_filter
 
