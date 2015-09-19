@@ -1,10 +1,12 @@
+#! /usr/bin/env python
+
 from rule_book import RuleBook
 
 import argparse
 import sys
 
 
-def parse_args(args=sys.argv):
+def parse_args():
     '''
     Define the CLI and parse the arguments.
     '''
@@ -20,7 +22,7 @@ def parse_args(args=sys.argv):
         help='A yaml file containing the monitor rules.'
     )
 
-    return parser.parse_args(args)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
