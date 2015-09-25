@@ -3,6 +3,11 @@ Identify intrusion attempts in processes running inside docker containers using
 anomaly detection.
 
 ## Installation
+Installation requirements:
+ * Docker
+ * Python 2.7
+ * pip
+
 We recommend you install `docker-anomalies` inside a `virtualenv`:
 
 ```bash
