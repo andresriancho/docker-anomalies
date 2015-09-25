@@ -107,10 +107,8 @@ class ProcessMonitorThread(threading.Thread):
     def syscall_callback(self, syscall):
         queue_syscall(syscall)
 
-    def ignore_syscall_callback(self, *args):
-        # TODO: Smarter decision here, we only want some of the syscalls
-        #       sent to the queue/anomaly detection engine
-        return False
+    def ignore_syscall_callback(self, syscall):
+        return not syscall.name in {'open', 'access', 'write'}
 
     def event_callback(self, *args):
         pass
