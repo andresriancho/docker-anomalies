@@ -39,7 +39,7 @@ Monitoring process ID: 10410
 New process ID detected 10410 detected in container 9957e6a
 Attach process 10410
 Attach process 10410
-{'arguments': [{'type': 'unsigned int', 'name': 'fd', 'value': 0L}, ... 'name': 'read'}
+{'arguments': [{'type': 'int', 'name': 'fd', 'value': 0L}, ... 'name': 'read'}
 {'arguments': [{'type': 'int', 'name': 'fd', 'value': 2L}, ... 'name': 'write'}
 ```
 
