@@ -75,6 +75,9 @@ sends an email to the admins.
 
 ![docker anomaly detection](https://cloud.githubusercontent.com/assets/865200/10103473/90577d44-637a-11e5-95e1-6657678090ef.png)
 
+Redis allows multiple docker daemons to send events to the queue, and multiple
+anomaly detection engines consuming the events.
+
 ## Disclaimer
 This code is alpha state, we just wanted to explore Docker REST API and `ptrace`.
 No performance/load testing was done and the anomaly detection engine is very basic.
