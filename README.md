@@ -3,6 +3,11 @@ Identify intrusion attempts in processes running inside docker containers using
 anomaly detection.
 
 ## Installation
+Installation requirements:
+ * Docker
+ * Python 2.7
+ * pip
+
 We recommend you install `docker-anomalies` inside a `virtualenv`:
 
 ```bash
@@ -75,6 +80,5 @@ This code is alpha state, we just wanted to explore Docker REST API and `ptrace`
 No performance/load testing was done and the anomaly detection engine is very basic.
 
 ## Project leaders
-[Andrés Riancho](https://github.com/jpcenteno)
-
-[Joaquín P. Centeno](https://github.com/jpcenteno)
+ * [Andrés Riancho](https://github.com/jpcenteno)
+ * [Joaquín P. Centeno](https://github.com/jpcenteno)
