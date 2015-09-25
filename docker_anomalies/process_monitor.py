@@ -12,7 +12,7 @@ PROCESS_MONITORS = []
 CONTAINER_MONITOR_TIMEOUT = 1
 
 
-def container_monitor(event):
+def container_monitor(event, redis_port):
     """
     Receives a container event and starts/stops monitoring the processes
     started inside that container.
@@ -26,7 +26,7 @@ def container_monitor(event):
     event_action = event['status']
 
     if event_action == 'start':
-        thread = ContainerMonitorThread(container_id)
+        thread = ContainerMonitorThread(container_id, redis_port)
         thread.daemon = True
         thread.start()
 
@@ -40,7 +40,8 @@ def container_monitor(event):
 
 
 class ContainerMonitorThread(threading.Thread):
-    def __init__(self, container_id):
+    def __init__(self, container_id, redis_port):
+        self.redis_port = redis_port
         self.container_id = container_id
         self.should_run = True
         self.client = Client(base_url='unix://var/run/docker.sock')
@@ -69,7 +70,7 @@ class ContainerMonitorThread(threading.Thread):
                         break
 
                 if not already_monitored:
-                    process_monitor(pid)
+                    process_monitor(self.container_id, pid, self.redis_port)
 
                     msg = 'New process ID detected %s detected in container %s'
                     logging.info(msg % (pid, self.container_id[:7]))
@@ -80,7 +81,9 @@ class ContainerMonitorThread(threading.Thread):
 
 
 class ProcessMonitorThread(threading.Thread):
-    def __init__(self, process_id):
+    def __init__(self, container_id, process_id, redis_port):
+        self.redis_port = redis_port
+        self.container_id = container_id
         self.process_id = process_id
         self.debugger = None
         super(ProcessMonitorThread, self).__init__(name='ProcessMonitor')
@@ -105,12 +108,11 @@ class ProcessMonitorThread(threading.Thread):
         self.debugger.main()
 
     def syscall_callback(self, syscall):
-        queue_syscall(syscall)
+        queue_syscall(self.container_id, self.process_id,
+                      syscall, self.redis_port)
 
-    def ignore_syscall_callback(self, *args):
-        # TODO: Smarter decision here, we only want some of the syscalls
-        #       sent to the queue/anomaly detection engine
-        return False
+    def ignore_syscall_callback(self, syscall):
+        return not syscall.name in {'open', 'access', 'write'}
 
     def event_callback(self, *args):
         pass
@@ -124,14 +126,14 @@ class ProcessMonitorThread(threading.Thread):
             logging.info('Finished monitoring process ID: %s' % self.process_id)
 
 
-def process_monitor(pid):
+def process_monitor(container_id, pid, redis_port):
     """
     Starts monitoring a process which is running inside a container and
     sends the events to the queue for anomaly detection engine to consume
 
     :param pid: The process ID to monitor
     """
-    thread = ProcessMonitorThread(pid)
+    thread = ProcessMonitorThread(container_id, pid, redis_port)
     thread.daemon = True
     thread.start()
 

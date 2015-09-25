@@ -6,7 +6,7 @@ from docker import Client
 from docker_anomalies.process_monitor import container_monitor
 
 
-def event_stream(images=['redis1', ]):
+def monitor_event_stream(redis_port):
     """
     Read events from docker's event stream and call the container monitor
     """
@@ -17,6 +17,6 @@ def event_stream(images=['redis1', ]):
     try:
         for event in client.events():
             event = json.loads(event)
-            container_monitor(event)
+            container_monitor(event, redis_port)
     except KeyboardInterrupt:
         sys.exit(0)

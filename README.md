@@ -62,6 +62,9 @@ Using the process IDs, root privileges, and `ptrace, `docker-anomalies` captures
 the syscalls from all container processes and sends them to a Redis queue
 (serialized using msgpack).
 
+The redis daemon is started by `docker-anomalies` inside a container so you
+don't have to worry about it.
+
 The event anomaly detection analyzes the process behaviour and if necessary
 sends an email to the admins.
 

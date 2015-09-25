@@ -2,3 +2,5 @@ docker-events==0.0.10
 docker-py==1.4.0
 python-ptrace==0.8.1
 msgpack-python==0.4.6
+redis==2.10.3
+port-for==0.3.1
