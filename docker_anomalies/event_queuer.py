@@ -1,7 +1,8 @@
 import msgpack
+import redis
 
 
-def queue_syscall(syscall):
+def queue_syscall(container_id, process_id, syscall, redis_port):
     """
     :param syscall: Send the syscall to the queue
     :return: None
@@ -15,5 +16,9 @@ def queue_syscall(syscall):
         arguments.append(arg_data)
 
     data = {'arguments': arguments,
-            'name': syscall.name}
-    print data
+            'name': syscall.name,
+            'container_id': container_id,
+            'process_id': process_id}
+
+    r = redis.StrictRedis(host='localhost', port=redis_port, db=0)
+    r.publish('docker-anomalies', msgpack.dumps(data))
