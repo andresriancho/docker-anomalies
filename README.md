@@ -73,4 +73,5 @@ No performance/load testing was done and the anomaly detection engine is very ba
 
 ## Project leaders
 [Andrés Riancho](https://github.com/jpcenteno)
+
 [Joaquín P. Centeno](https://github.com/jpcenteno)
