@@ -77,5 +77,5 @@ This code is alpha state, we just wanted to explore Docker REST API and `ptrace`
 No performance/load testing was done and the anomaly detection engine is very basic.
 
 ## Project leaders
- * [Andrés Riancho](https://github.com/jpcenteno)
+ * [Andrés Riancho](https://github.com/andresriancho)
  * [Joaquín P. Centeno](https://github.com/jpcenteno)
