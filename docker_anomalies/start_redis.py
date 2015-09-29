@@ -14,7 +14,8 @@ DEFAULT_REDIS_PORT = 6379
 
 def download_image_if_missing(docker_client):
     redis_images = docker_client.images(name=REDIS_REPO)
-    proper_image_exists = bool([image for image in redis_images if REDIS_IMAGE in image['RepoTags']])
+    proper_image_exists = bool(
+        [image for image in redis_images if REDIS_IMAGE in image['RepoTags']])
     if not proper_image_exists:
         logging.debug('Pulling redis image...')
         docker_client.pull(repository=REDIS_REPO, tag=REDIS_IMAGE_TAG)
@@ -26,7 +27,11 @@ def start_redis_container(docker_client):
     host_config = docker.utils.create_host_config(port_bindings={
         DEFAULT_REDIS_PORT: redis_port,
     })
-    container_id = docker_client.create_container(REDIS_IMAGE, host_config=host_config)['Id']
+
+    container_id = docker_client.create_container(
+        REDIS_IMAGE,
+        host_config=host_config
+    )['Id']
 
     docker_client.start(container_id)
 
