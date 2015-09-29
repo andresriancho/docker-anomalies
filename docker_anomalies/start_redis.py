@@ -13,6 +13,9 @@ DEFAULT_REDIS_PORT = 6379
 
 
 def download_image_if_missing(docker_client):
+    """
+    Ensures that the needed Redis Docker image is present.
+    """
     redis_images = docker_client.images(name=REDIS_REPO)
     proper_image_exists = bool(
         [image for image in redis_images if REDIS_IMAGE in image['RepoTags']])
@@ -22,6 +25,9 @@ def download_image_if_missing(docker_client):
 
 
 def start_redis_container(docker_client):
+    """
+    Start a Redis Docker container.
+    """
     logging.debug('Starting redis container')
     redis_port = port_for.select_random()
     host_config = docker.utils.create_host_config(port_bindings={
@@ -58,6 +64,10 @@ def start_redis_container(docker_client):
 
 
 def start_redis():
+    """
+    Start a Docker container with a Redis instance to be used as the
+    event queue.
+    """
     docker_client = docker.Client(version='auto')
     download_image_if_missing(docker_client)
     container_id, redis_port = start_redis_container(docker_client)
@@ -65,5 +75,8 @@ def start_redis():
 
 
 def stop_redis(container_id):
+    """
+    Stop the container used for the event queue.
+    """
     docker_client = docker.Client(version='auto')
     docker_client.remove_container(container_id, force=True)
