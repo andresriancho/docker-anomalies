@@ -14,6 +14,22 @@ def cli():
                         action='store_true',
                         help='Turn on the verbose output.')
 
+    parser.add_argument('--redis_docker_repo',
+                        default='redis',
+                        nargs=1,
+                        help='''
+Set the Docker repository for the Redis image that will be used as the
+message queue.
+''')
+
+    parser.add_argument('--redis_docker_tag',
+                        default='2.8.22',
+                        nargs=1,
+                        help='''
+Set the tag of the docker container that will be used as the message
+queue.
+''')
+
     return parser.parse_args()
 
 
@@ -24,7 +40,10 @@ def main():
     configure_logging(verbose=args.verbose)
 
     try:
-        container_id, redis_port = start_redis()
+        container_id, redis_port = start_redis(
+            repository=args.redis_repo[0],
+            tag=args.redis_docker_tag[0]
+        )
     except Exception, e:
         logging.error('%s' % e)
         return 1
